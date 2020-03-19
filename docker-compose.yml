@@ -1,0 +1,48 @@
+version: '3'
+services:
+  nginx-dev:
+      image: nginx:1.16.1-alpine
+      container_name: env-nginx-dev
+      ports:
+        - "80:80"
+        - "443:443"
+      volumes:
+        - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+        - ./conf/nginx/enable-php.conf:/etc/nginx/enable-php.conf:ro
+        - ./conf/nginx/rewrite-laravel.conf:/etc/nginx/rewrite-laravel.conf:ro
+        - ./conf/nginx/conf.d:/etc/nginx/conf.d/:ro
+        - ./conf/nginx/cors.conf:/etc/nginx/cors.conf:ro
+        - ./conf/nginx/deny.conf:/etc/nginx/deny.conf:ro
+        - ./conf/nginx/rewrite-vue.conf:/etc/nginx/rewrite-vue.conf:ro
+        - ${PROJECT_FILE_PATH}:/var/wwwroot/:rw
+      working_dir: /var/wwwroot
+      networks:
+        - net-project
+      restart: always
+  php-dev:
+      image : "${PHP_IMAGE_TAG}"
+      expose:
+        - "9000"
+      container_name: env-php-dev
+      volumes:
+        - ${PROJECT_FILE_PATH}:/var/wwwroot/:rw
+      networks:
+        - net-project
+      working_dir: /var/wwwroot
+      restart: always
+  mysql-dev:
+      image: daocloud.io/mysql:5.7
+      container_name: env-mysql-dev
+      environment:
+        - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      volumes:
+        - ./conf/mysql/my.cnf:/etc/my.cnf:ro
+        - ${MYSQL_DATA_PATH}/mysql-volume:/var/lib/mysql
+      ports:
+        - "3306:3306"
+      networks:
+        - net-project
+      restart: always
+networks:
+    net-project:
+        driver: bridge

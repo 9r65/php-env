@@ -1,0 +1,31 @@
+基于docker构建php开发环境
+
+----
+
+包含工具： 
+php7.2-fpm [独立构建]
+nginx 1.16.1-alpine
+mysql 5.7
+
+依赖：
+docker
+docker-compose
+
+
+提示：
+
+1. 本项目只是一个构建开发环境的思路或实例，所有工具、工具版本、配置项都可自行进行增加、删除、替换。
+2. docker-compose.yml文件中，mysql的镜像默认为daocloud中提供的镜像源，如果没有配置daocloud的加速器则可能无法正常获取，请修改至hub.docker.com的官方镜像
+
+使用：
+
+请先正确安装docker、docker-compose，并配置好加速器。
+
+1.编译php镜像
+进入php-72-fpm,检查php.ini配置项与dockerfile文件中php拓展项是否符合自身的开发需求，确认后进行编译。
+docker build -t xxx .  # xxx 可自行替换，这个tag在后续需要填写到.env文件中
+
+2.复制.env.example 为 .env ,并按注释正确填写变量值
+
+3. 运行docker-compose up 开始进行调试. 为了方便调试没有使用daemon模式，调试完成后请加入 -d 参数，使其中以daemon模式运行 docker-compose up -d
+
